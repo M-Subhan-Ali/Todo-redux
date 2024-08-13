@@ -1,19 +1,37 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Submit } from "../../Feature/TodoSlice";
+import { Submit, Remove, Edit } from "../../Feature/TodoSlice";
 const ReduxToDo = () => {
   const [data, setData] = useState("");
-  const [store, setStore] = useState([]);
+  const [editTodo, setEditTodo] = useState(null);
   const dispatch = useDispatch();
-  const todo = useSelector((state) => state.Todo.list);
+  const list = useSelector((state) => state.Todo.list);
 
   const Handler = (event) => {
     setData(event.target.value);
   };
   const HandleSubmit = (event) => {
     event.preventDefault();
-    dispatch(Submit(data));
   };
+
+  const Add = () => {
+    if (data.trim() !== "") {
+      if (editTodo !== null) {
+        dispatch(Edit({ value: data, index: editTodo }));
+        setData(list[editTodo]);
+        setEditTodo(null);
+      } else {
+        dispatch(Submit(data));
+      }
+      setData("");
+    }
+  };
+
+  const Edits = (index) => {
+    setData(list[index]);
+    setEditTodo(index);
+  };
+
   return (
     <div
       style={{
@@ -43,7 +61,7 @@ const ReduxToDo = () => {
           </div>
           <div>
             <button
-              type="submit"
+              onClick={() => Add()}
               style={{
                 backgroundColor: "red",
                 color: "white",
@@ -60,13 +78,13 @@ const ReduxToDo = () => {
                 border: "gray",
               }}
             >
-              Submit
+              {editTodo !== null ? "Update" : "Submit"}
             </button>
           </div>
         </div>
-        {todo.map((value, index) => {
+        {list.map((value, index) => {
           return (
-            <div style={{ display: "grid" }}>
+            <div key={index} style={{ display: "grid" }}>
               <div
                 className="flex"
                 style={{
@@ -77,11 +95,12 @@ const ReduxToDo = () => {
                 }}
               >
                 <div>
-                  <h1 style={{ fontSize: "20px" }}>{data}</h1>
+                  <h1 style={{ fontSize: "20px" }}>{value}</h1>
                 </div>
                 <div className="flex" style={{ gap: "10px" }}>
                   <div>
                     <button
+                      onClick={() => dispatch(Remove(index))}
                       style={{
                         padding: "10px",
                         backgroundColor: "red",
@@ -96,6 +115,7 @@ const ReduxToDo = () => {
                   </div>
                   <div>
                     <button
+                      onClick={() => Edits(index)}
                       style={{
                         padding: "10px",
                         backgroundColor: "green",

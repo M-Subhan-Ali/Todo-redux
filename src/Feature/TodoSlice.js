@@ -11,7 +11,15 @@ const Todoslice = createSlice({
     Submit: (state, action) => {
       state.list.push(action.payload);
     },
+    Remove:(state,action)=>{
+    state.list=state.list.filter((item,id)=>id!==action.payload);
+    },
+    Edit:(state,action)=>{
+      const {value,index}=action.payload;
+      state.list[index]=value;
+    }
+      
   },
 });
-export const { Submit } = Todoslice.actions;
+export const { Submit,Remove,Edit } = Todoslice.actions;
 export default Todoslice.reducer;
